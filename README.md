@@ -1,11 +1,15 @@
 # Zuany WMS
 
 Sistema de gestión de almacenes (WMS) para administrar productos, ubicaciones,
-movimientos de inventario y reportes operativos desde una aplicación de consola
-en Java.
+movimientos de inventario y reportes operativos.
 
-La aplicación se conecta a PostgreSQL a través de Supabase usando JDBC y está
-pensada como proyecto académico para operar un inventario con trazabilidad.
+La aplicación ofrece dos modos de uso:
+
+1. **Consola** — `App.java`, la interfaz original basada en terminal.
+2. **Web UI** — `ApiServer.java` + `web/`, interfaz gráfica moderna en el
+   navegador.
+
+Ambos se conectan a PostgreSQL a través de Supabase usando JDBC.
 
 ## Qué resuelve
 
@@ -18,10 +22,11 @@ pensada como proyecto académico para operar un inventario con trazabilidad.
 
 ## Stack
 
-- **Java** para la aplicación de consola.
+- **Java** para la aplicación de consola y el servidor API.
 - **JDBC** para la comunicación con PostgreSQL.
 - **Supabase** como proveedor de base de datos.
 - **PostgreSQL JDBC Driver 42.7.13**, incluido en `lib/`.
+- **HTML / CSS / JavaScript** para la interfaz web.
 - **Visual Studio Code** con Extension Pack for Java (opcional, pero recomendado).
 
 ## Requisitos
@@ -44,8 +49,9 @@ La aplicación espera, entre otras, las siguientes tablas y funciones:
 
 ## Configuración de la conexión
 
-Antes de ejecutar el proyecto, configura en `src/App.java` la URL, el usuario y
-la contraseña de tu instancia de PostgreSQL/Supabase.
+Antes de ejecutar el proyecto, configura en `src/App.java` (consola) o
+`src/ApiServer.java` (web) la URL, el usuario y la contraseña de tu instancia
+de PostgreSQL/Supabase.
 
 > **Importante:** actualmente las credenciales están escritas directamente en
 > el código. No subas contraseñas reales al repositorio. Para un entorno serio,
@@ -58,7 +64,7 @@ La conexión actual usa el pooler de Supabase y SSL:
 jdbc:postgresql://<host>:6543/postgres?sslmode=require
 ```
 
-## Ejecutar desde la terminal
+## Ejecutar la interfaz de consola
 
 Desde la raíz del proyecto:
 
@@ -77,17 +83,35 @@ javac -cp "lib\postgresql-42.7.13.jar" -d bin src\App.java
 java -cp "bin;lib\postgresql-42.7.13.jar" App
 ```
 
+## Ejecutar la interfaz web
+
+```bash
+# macOS/Linux
+rm -rf bin
+mkdir -p bin
+javac -cp "lib/postgresql-42.7.13.jar" -d bin src/ApiServer.java
+java -cp "bin:lib/postgresql-42.7.13.jar" ApiServer
+```
+
+Después abre tu navegador en **http://localhost:8080**.
+
+El servidor levanta un API REST en Java y sirve los archivos estáticos de
+`web/` automáticamente.
+
 ## Ejecutar desde VS Code
 
 1. Abre la carpeta del proyecto en VS Code.
 2. Instala el **Extension Pack for Java** si VS Code lo solicita.
 3. Verifica que el JDK seleccionado sea 17 o superior.
-4. Abre `src/App.java` y pulsa **Run Java**.
+4. Abre `src/App.java` (consola) o `src/ApiServer.java` (web) y pulsa
+   **Run Java**.
 
 La configuración de `.vscode/settings.json` ya reconoce `src/` como origen,
 `bin/` como salida y todos los JAR dentro de `lib/` como dependencias.
 
 ## Flujo de uso
+
+### Consola
 
 Al iniciar, el sistema intenta conectarse a la base de datos y muestra el menú
 principal. Selecciona una opción escribiendo el número correspondiente:
@@ -100,6 +124,12 @@ principal. Selecciona una opción escribiendo el número correspondiente:
 5. Salir del Sistema
 ```
 
+### Web
+
+Al iniciar, el navegador muestra la pantalla de inicio con accesos directos a
+cada módulo. Navega entre secciones usando la barra superior. Cada módulo tiene
+pestañas internas para consultar, crear, editar y eliminar registros.
+
 Los movimientos requieren que existan previamente el usuario, el producto y la
 ubicación relacionados en la base de datos.
 
@@ -108,10 +138,15 @@ ubicación relacionados en la base de datos.
 ```text
 WMS_App/
 ├── src/
-│   └── App.java                    # Menú y lógica JDBC de la aplicación
+│   ├── App.java                    # Menú y lógica JDBC (consola)
+│   └── ApiServer.java              # Servidor HTTP + API REST (web)
+├── web/
+│   ├── index.html                  # Interfaz web principal
+│   ├── style.css                   # Estilos (dark theme, glassmorphism)
+│   └── app.js                      # Lógica del front-end
 ├── lib/
 │   └── postgresql-42.7.13.jar     # Driver JDBC de PostgreSQL
-├── bin/                            # `.class` generados al compilar
+├── bin/                            # .class generados al compilar
 ├── .vscode/
 │   └── settings.json               # Configuración del proyecto Java
 └── README.md

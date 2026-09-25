@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zuany WMS — Sistema de gestión de almacenes. Administra productos, ubicaciones, movimientos e inventario.">
+    <title>Zuany WMS — Warehouse Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ═══════════ NAV BAR ═══════════ -->
+    <nav id="main-nav">
+        <div class="nav-brand">
+            <span class="brand-icon">📦</span>
+            <span class="brand-text">Zuany<br><strong>WMS</strong></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-section="home" id="nav-home">Home</a>
+            <a href="#" class="nav-link" data-section="productos" id="nav-productos">Productos</a>
+            <a href="#" class="nav-link" data-section="ubicaciones" id="nav-ubicaciones">Ubicaciones</a>
+            <a href="#" class="nav-link" data-section="movimientos" id="nav-movimientos">Movimientos</a>
+            <a href="#" class="nav-link" data-section="reportes" id="nav-reportes">Reportes</a>
+        </div>
+        <div class="nav-status" id="nav-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Conectado</span>
+        </div>
+    </nav>
+
+    <!-- ═══════════ HERO / HOME ═══════════ -->
+    <section id="section-home" class="section active">
+        <div class="hero">
+            <div class="hero-glow"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Gestiona tu almacén.<br>
+                    <span class="hero-highlight">Contrólalo todo.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Zuany WMS conecta productos, ubicaciones y movimientos en un
+                    solo sistema — con trazabilidad completa y reportes en tiempo real.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="navigateTo('productos')" id="btn-enter-productos">
+                        Explorar Productos
+                    </button>
+                    <button class="btn btn-outline" onclick="navigateTo('reportes')" id="btn-enter-reportes">
+                        Ver Reportes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating module cards -->
+            <div class="floating-cards">
+                <div class="float-card card-1" onclick="navigateTo('productos')">
+                    <span class="fc-dot green"></span>
+                    <strong>Módulo de Productos</strong>
+                    <small>CRUD completo · Catálogo</small>
+                </div>
+                <div class="float-card card-2" onclick="navigateTo('ubicaciones')">
+                    <span class="fc-dot amber"></span>
+                    <strong>Ubicaciones</strong>
+                    <small>Almacén · Estrato</small>
+                </div>
+                <div class="float-card card-3" onclick="navigateTo('movimientos')">
+                    <span class="fc-dot blue"></span>
+                    <strong>Movimientos</strong>
+                    <small>Recepciones · Conteo</small>
+                </div>
+                <div class="float-card card-4" onclick="navigateTo('reportes')">
+                    <span class="fc-dot pink"></span>
+                    <strong>Reportes Generales</strong>
+                    <small>Stock · Auditoría</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ PRODUCTOS ═══════════ -->
+    <section id="section-productos" class="section">
+        <div class="module-header">
+            <h2><span class="module-icon">📦</span> Módulo de Productos</h2>
+            <p>Consulta, registra, edita y da de baja productos del catálogo.</p>
+        </div>
+
+        <div class="tab-bar" id="productos-tabs">
+            <button class="tab active" data-tab="productos-list" id="tab-prod-list">🔍 Catálogo</button>
+            <button class="tab" data-tab="productos-add" id="tab-prod-add">➕ Nuevo Producto</button>
+            <button class="tab" data-tab="productos-edit" id="tab-prod-edit">✏️ Editar</button>
+            <button class="tab" data-tab="productos-delete" id="tab-prod-del">🗑️ Eliminar</button>
+        </div>
+
+        <!-- List -->
+        <div class="tab-content active" id="productos-list">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Catálogo de Productos</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadProductos()" id="btn-refresh-prod">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-productos">
+                        <thead>
+                            <tr><th>ID</th><th>SKU</th><th>Descripción</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add -->
+        <div class="tab-content" id="productos-add">
+            <div class="card glass">
+                <h3>Registrar nuevo producto</h3>
+                <form id="form-add-producto" class="form-grid" onsubmit="return addProducto(event)">
+                    <label>SKU <input type="text" id="add-prod-sku" placeholder="SYS-NUEVO-001" required></label>
+                    <label>Descripción <input type="text" id="add-prod-desc" placeholder="Router Cisco 2901" required></label>
+                    <label>SKU Fabricante <input type="text" id="add-prod-skufab" placeholder="CISCO-2901-K9"></label>
+                    <label>Categoría
+                        <select id="add-prod-cat" required></select>
+                    </label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-prod">Registrar Producto</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit -->
+        <div class="tab-content" id="productos-edit">
+            <div class="card glass">
+                <h3>Modificar descripción de un producto</h3>
+                <form id="form-edit-producto" class="form-grid" onsubmit="return editProducto(event)">
+                    <label>SKU del producto <input type="text" id="edit-prod-sku" placeholder="SYS-RTR-001" required></label>
+                    <label>Nueva descripción <input type="text" id="edit-prod-desc" placeholder="Nueva descripción" required></label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-edit-prod">Actualizar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete -->
+        <div class="tab-content" id="productos-delete">
+            <div class="card glass">
+                <h3>Dar de baja un producto</h3>
+                <form id="form-delete-producto" class="form-grid" onsubmit="return deleteProducto(event)">
+                    <label>SKU del producto <input type="text" id="del-prod-sku" placeholder="SYS-RTR-001" required></label>
+                    <button class="btn btn-danger" type="submit" id="btn-submit-del-prod">🗑️ Eliminar Producto</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ UBICACIONES ═══════════ -->
+    <section id="section-ubicaciones" class="section">
+        <div class="module-header">
+            <h2><span class="module-icon">🏢</span> Módulo de Ubicaciones</h2>
+            <p>Administra las ubicaciones del almacén y sus tipos de almacenaje.</p>
+        </div>
+
+        <div class="tab-bar" id="ubicaciones-tabs">
+            <button class="tab active" data-tab="ubicaciones-list" id="tab-ubi-list">📍 Consultar</button>
+            <button class="tab" data-tab="ubicaciones-add" id="tab-ubi-add">📌 Registrar</button>
+            <button class="tab" data-tab="ubicaciones-edit" id="tab-ubi-edit">🔧 Modificar</button>
+            <button class="tab" data-tab="ubicaciones-delete" id="tab-ubi-del">🚧 Eliminar</button>
+        </div>
+
+        <div class="tab-content active" id="ubicaciones-list">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Ubicaciones del Almacén</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadUbicaciones()" id="btn-refresh-ubi">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-ubicaciones">
+                        <thead>
+                            <tr><th>ID</th><th>Ubicación</th><th>Estrato</th><th>Pasillo</th><th>Bahía</th><th>Lado</th><th>Tipo</th><th>Nivel</th><th>Consec.</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="ubicaciones-add">
+            <div class="card glass">
+                <h3>Registrar nueva ubicación</h3>
+                <form id="form-add-ubicacion" class="form-grid" onsubmit="return addUbicacion(event)">
+                    <label>Estrato <input type="text" id="add-ubi-estrato" placeholder="A" maxlength="1" required></label>
+                    <label>Pasillo <input type="text" id="add-ubi-pasillo" placeholder="01" required></label>
+                    <label>Bahía <input type="text" id="add-ubi-bahia" placeholder="05" required></label>
+                    <label>Lado <input type="text" id="add-ubi-lado" placeholder="I" maxlength="1" required></label>
+                    <label>Tipo Almacenaje <input type="text" id="add-ubi-tipo" placeholder="A" maxlength="1" required></label>
+                    <label>Nivel <input type="number" id="add-ubi-nivel" placeholder="2" required></label>
+                    <label>Consecutivo <input type="number" id="add-ubi-consec" placeholder="1" required></label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-ubi">Registrar Ubicación</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="ubicaciones-edit">
+            <div class="card glass">
+                <h3>Modificar tipo de almacenaje</h3>
+                <form id="form-edit-ubicacion" class="form-grid" onsubmit="return editUbicacion(event)">
+                    <label>Código de ubicación <input type="text" id="edit-ubi-codigo" placeholder="B0405DR212" required></label>
+                    <label>Nuevo tipo de almacenaje <input type="text" id="edit-ubi-tipo" placeholder="A" maxlength="1" required></label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-edit-ubi">Actualizar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="ubicaciones-delete">
+            <div class="card glass">
+                <h3>Eliminar ubicación</h3>
+                <form id="form-delete-ubicacion" class="form-grid" onsubmit="return deleteUbicacion(event)">
+                    <label>Código de ubicación <input type="text" id="del-ubi-codigo" placeholder="B0405DR212" required></label>
+                    <button class="btn btn-danger" type="submit" id="btn-submit-del-ubi">🚧 Eliminar Ubicación</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ MOVIMIENTOS ═══════════ -->
+    <section id="section-movimientos" class="section">
+        <div class="module-header">
+            <h2><span class="module-icon">🔄</span> Módulo de Movimientos</h2>
+            <p>Registra recepciones de stock, realiza conteos cíclicos y consulta el historial.</p>
+        </div>
+
+        <div class="tab-bar" id="movimientos-tabs">
+            <button class="tab active" data-tab="movimientos-recepcion" id="tab-mov-rec">🚚 Recepción</button>
+            <button class="tab" data-tab="movimientos-conteo" id="tab-mov-cnt">📋 Conteo Cíclico</button>
+            <button class="tab" data-tab="movimientos-historial" id="tab-mov-hist">🕒 Historial</button>
+        </div>
+
+        <div class="tab-content active" id="movimientos-recepcion">
+            <div class="card glass">
+                <h3>Registrar recepción de stock</h3>
+                <form id="form-recepcion" class="form-grid" onsubmit="return registrarRecepcion(event)">
+                    <label>Operador
+                        <select id="rec-operador" required></select>
+                    </label>
+                    <label>SKU del producto <input type="text" id="rec-sku" placeholder="SYS-RTR-001" required></label>
+                    <label>Ubicación <input type="text" id="rec-ubicacion" placeholder="B0405DR212" required></label>
+                    <label>Cantidad <input type="number" id="rec-cantidad" placeholder="300" min="1" required></label>
+                    <label>Condición <input type="text" id="rec-condicion" placeholder="A" maxlength="1" value="A" required></label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-rec">Registrar Recepción</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="movimientos-conteo">
+            <div class="card glass">
+                <h3>Conteo cíclico / Asignación</h3>
+                <form id="form-conteo" class="form-grid" onsubmit="return registrarConteo(event)">
+                    <label>Operador
+                        <select id="cnt-operador" required></select>
+                    </label>
+                    <label>SKU del producto <input type="text" id="cnt-sku" placeholder="SYS-RTR-001" required></label>
+                    <label>Ubicación <input type="text" id="cnt-ubicacion" placeholder="B0405DR212" required></label>
+                    <label>Cantidad física <input type="number" id="cnt-cantidad" placeholder="12" min="0" required></label>
+                    <button class="btn btn-primary" type="submit" id="btn-submit-cnt">Registrar Conteo</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="movimientos-historial">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Historial de Transacciones</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadMovimientos()" id="btn-refresh-mov">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-movimientos">
+                        <thead>
+                            <tr><th>ID</th><th>Usuario</th><th>Inventario</th><th>Acción</th><th>Cantidad</th><th>Fecha</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ REPORTES ═══════════ -->
+    <section id="section-reportes" class="section">
+        <div class="module-header">
+            <h2><span class="module-icon">📊</span> Módulo de Reportes</h2>
+            <p>Consulta el stock total, la ocupación del almacén y la auditoría integral.</p>
+        </div>
+
+        <div class="tab-bar" id="reportes-tabs">
+            <button class="tab active" data-tab="reportes-stock" id="tab-rep-stock">📦 Stock Total</button>
+            <button class="tab" data-tab="reportes-ocupacion" id="tab-rep-ocu">🏢 Ocupación</button>
+            <button class="tab" data-tab="reportes-auditoria" id="tab-rep-aud">🛡️ Auditoría</button>
+        </div>
+
+        <div class="tab-content active" id="reportes-stock">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Reporte de Stock Total</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadReporteStock()" id="btn-refresh-stock">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-stock">
+                        <thead>
+                            <tr><th>ID</th><th>SKU</th><th>Descripción</th><th>Stock Total</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="reportes-ocupacion">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Ocupación del almacén por estrato</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadOcupacion()" id="btn-refresh-ocu">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-ocupacion">
+                        <thead>
+                            <tr><th>Estrato</th><th>Total Ubicaciones</th><th>Total Piezas</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="reportes-auditoria">
+            <div class="card glass">
+                <div class="card-header">
+                    <h3>Auditoría integral de inventario</h3>
+                    <button class="btn btn-sm btn-ghost" onclick="loadAuditoria()" id="btn-refresh-aud">⟳ Actualizar</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="table-auditoria">
+                        <thead>
+                            <tr><th>Evento</th><th>Acción</th><th>Cantidad</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════ TOAST ═══════════ -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

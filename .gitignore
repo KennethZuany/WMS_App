@@ -1,0 +1,19 @@
+# Compiled class files
+bin/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Java
+*.class
+hs_err_pid*
+
+# IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
